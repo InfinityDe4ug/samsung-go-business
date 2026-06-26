@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsung Go Business — Payroll Partner Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #050B3A 0%, #0a1555 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 42px;
+            color: #00C2FF;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .tagline {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #1428A0, #1a35c4);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #1a35c4, #1f3dd6);
+            box-shadow: 0 8px 24px rgba(20, 40, 160, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: rgba(5, 11, 58, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 194, 255, 0.15);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            font-size: 28px;
+            color: #00C2FF;
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .card {
+            background: rgba(0, 194, 255, 0.05);
+            border: 1px solid rgba(0, 194, 255, 0.2);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            color: #00C2FF;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .flow-diagram {
+            background: rgba(0, 194, 255, 0.05);
+            border-left: 4px solid #1428A0;
+            padding: 24px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #00C2FF;
+            overflow-x: auto;
+            margin: 24px 0;
+        }
+
+        .highlight {
+            color: #1428A0;
+            font-weight: 600;
+        }
+
+        .checkmark {
+            color: #00C2FF;
+            margin-right: 8px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        ul li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00C2FF;
+            font-weight: bold;
+        }
+
+        .benefits-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .benefit-item {
+            padding: 16px;
+            background: rgba(0, 194, 255, 0.08);
+            border-radius: 6px;
+            border-left: 3px solid #00C2FF;
+        }
+
+        .benefit-item strong {
+            color: #00C2FF;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .benefit-item p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+            font-size: 13px;
+        }
+
+        .comparison-table th {
+            background: rgba(0, 194, 255, 0.1);
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid rgba(0, 194, 255, 0.3);
+            color: #00C2FF;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 194, 255, 0.1);
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(0, 194, 255, 0.05);
+        }
+
+        .yes {
+            color: #00C2FF;
+        }
+
+        .no {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(0, 194, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+        }
+
+        .timeline-marker {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1428A0, #1a35c4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: 600;
+            color: white;
+        }
+
+        .timeline-content h4 {
+            color: #00C2FF;
+            margin-bottom: 6px;
+        }
+
+        .timeline-content p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Samsung Go Business</h1>
+            <p class="tagline">Direct-deposit destination for payroll providers</p>
+            <div class="cta-buttons">
+                <button onclick="scrollToSection('integration')">Integration Overview</button>
+                <button onclick="scrollToSection('benefits')">View Benefits</button>
+                <button onclick="location.href='mailto:partnership@samsunggobusiness.com'">Contact Us</button>
+            </div>
+        </header>
+
+        <!-- Value Proposition -->
+        <section class="section">
+            <h2>What Is Samsung Go Business?</h2>
+            <p>A Galaxy-native fintech platform that employees can elect as their direct-deposit destination through your payroll system. Workers choose Samsung Go the same way they'd select any bank—zero friction, zero change to your payroll process.</p>
+            
+            <div class="flow-diagram">
+Employer Payroll System
+    ↓
+Your Platform (existing)
+    ↓
+ACH Origination (no change)
+    ↓
+Sponsor Bank ← Samsung Go Account
+    ↓
+Employee's Galaxy Device
+├─ Instant balance
+├─ Split deposits
+├─ Mobile check deposit
+└─ Native Galaxy payments
+            </div>
+
+            <p><strong>The key point:</strong> This is a direct-deposit election, not a payroll rebuild. Your systems stay exactly the same. We handle everything else.</p>
+        </section>
+
+        <!-- What Payroll Providers Get -->
+        <section class="section" id="benefits">
+            <h2>What Your Payroll Platform Gets</h2>
+            
+            <div class="benefits-list">
+                <div class="benefit-item">
+                    <strong>🚀 Employee Differentiation</strong>
+                    <p>Offer a modern banking option that 40% of U.S. workers can use immediately on their Galaxy devices.</p>
+                </div>
+                <div class="benefit-item">
+                    <strong>💰 Zero Cost</strong>
+                    <p>No integration fee, no revenue share, no backend processing fees. You offer value at no cost to you.</p>
+                </div>
+                <div class="benefit-item">
+                    <strong>📋 Zero Compliance</strong>
+                    <p>No new BSA/AML, KYC, or regulatory burden. We own all compliance; you stay in your lane.</p>
+                </div>
+                <div class="benefit-item">
+                    <strong>🔄 Zero Change</strong>
+                    <p>Your payroll origination, tax withholding, and employer workflows are unchanged. One new ACH destination.</p>
+                </div>
+                <div class="benefit-item">
+                    <strong>📊 Market Differentiation</strong>
+                    <p>Be the first payroll platform in your market to offer this. Attract modern, mobile-first employees.</p>
+                </div>
+                <div class="benefit-item">
+                    <strong>🤝 Partnership Support</strong>
+                    <p>Dedicated integration engineer, co-marketing, employee education materials, 24/7 support.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Integration Model -->
+        <section class="section" id="integration">
+            <h2>How The Integration Works</h2>
+
+            <h3 style="font-size: 20px; color: #00C2FF; margin-top: 30px; margin-bottom: 16px;">Step 1: Add Samsung Go to Your UI</h3>
+            <p>Add a direct-deposit election option in your employee onboarding or benefits portal. Same fields as any bank account (routing #, account #, confirmation).</p>
+
+            <h3 style="font-size: 20px; color: #00C2FF; margin-top: 30px; margin-bottom: 16px;">Step 2: Route ACH as Normal</h3>
+            <p>When an employee elects Samsung Go, route their paycheck to our sponsor bank's routing number. No special formatting, no new fields. Existing ACH infrastructure handles it exactly like any other account.</p>
+
+            <h3 style="font-size: 20px; color: #00C2FF; margin-top: 30px; margin-bottom: 16px;">Step 3: Monitor & Report</h3>
+            <p>Dashboard visibility: How many employees elected Samsung Go, aggregate volume, anonymized insights. No ongoing reconciliation—our sponsor bank handles settlement.</p>
+
+            <div style="background: rgba(0, 194, 255, 0.08); padding: 20px; border-radius: 8px; margin-top: 24px;">
+                <strong style="color: #00C2FF;">Integration Timeline:</strong>
+                <p style="color: rgba(255, 255, 255, 0.7); margin-top: 8px;">Development: 4–6 weeks | Sandbox testing: 2–4 weeks | Go-live: 1–2 weeks</p>
+            </div>
+        </section>
+
+        <!-- What Doesn't Change -->
+        <section class="section">
+            <h2>What Stays Exactly The Same</h2>
+            
+            <ul style="font-size: 15px;">
+                <li>Employer payroll origination process</li>
+                <li>Tax withholding and reporting (W-2, tax agency filing)</li>
+                <li>Payroll timing and cadence</li>
+                <li>Direct-deposit authorization flow</li>
+                <li>ACH infrastructure and settlement</li>
+                <li>Employee eligibility and verification</li>
+                <li>Compliance responsibility (stays with sponsor bank + Samsung)</li>
+            </ul>
+        </section>
+
+        <!-- Competitive Positioning -->
+        <section class="section">
+            <h2>How Samsung Go Stands Out</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Traditional Banks</th>
+                        <th>Neobanks</th>
+                        <th>Samsung Go</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Payroll Integration</strong></td>
+                        <td class="no">Separate sign-up</td>
+                        <td class="no">Separate sign-up</td>
+                        <td class="yes">Direct-deposit election</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Instant Access</strong></td>
+                        <td class="no">1–2 days</td>
+                        <td class="yes">Instant</td>
+                        <td class="yes">Instant</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Split Deposits</strong></td>
+                        <td class="no">Not supported</td>
+                        <td class="no">Requires setup</td>
+                        <td class="yes">Built-in, automatic</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mobile Check Deposit</strong></td>
+                        <td class="yes">Yes</td>
+                        <td class="yes">Yes</td>
+                        <td class="yes">Galaxy-native</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Galaxy Integration</strong></td>
+                        <td class="no">Generic web</td>
+                        <td class="no">Generic app</td>
+                        <td class="yes">Native to device</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Employer Change Required</strong></td>
+                        <td class="no">No</td>
+                        <td class="no">No</td>
+                        <td class="yes">No</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Go-to-Market -->
+        <section class="section">
+            <h2>Go-to-Market Timeline</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">1</div>
+                    <div class="timeline-content">
+                        <h4>Phase 1: Partner Recruitment (Q3–Q4 2026)</h4>
+                        <p>Target: 3–5 mid-market payroll providers. Goal: 50K–100K employees with Samsung Go election option. Establish proof points for enterprise expansion.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">2</div>
+                    <div class="timeline-content">
+                        <h4>Phase 2: Enterprise Scaling (Q4 2026 – Q2 2027)</h4>
+                        <p>Outreach to ADP, Guidepoint, Rippling, Workday. Goal: 500K+ employees with access to election. Establish market category.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">3</div>
+                    <div class="timeline-content">
+                        <h4>Phase 3: Market Penetration (2027+)</h4>
+                        <p>Become default or co-featured option. Expand to international payroll providers. Launch complementary fintech destinations (credit unions, etc.).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Next Steps -->
+        <section class="section">
+            <h2>Next Steps for Payroll Providers</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>1. Discovery Call</h3>
+                    <p>We understand your direct-deposit UI, ACH infrastructure, and timeline. 30 minutes.</p>
+                </div>
+                <div class="card">
+                    <h3>2. Technical Spec</h3>
+                    <p>We provide API docs, sandbox credentials, test accounts. You review and scope development.</p>
+                </div>
+                <div class="card">
+                    <h3>3. Development Sprint</h3>
+                    <p>Your team integrates Samsung Go option into direct-deposit UI and ACH routing. 4–6 weeks.</p>
+                </div>
+                <div class="card">
+                    <h3>4. Staging & Testing</h3>
+                    <p>Full sandbox environment with test ACH origination. We run through workflows together.</p>
+                </div>
+                <div class="card">
+                    <h3>5. Go-Live</h3>
+                    <p>Coordinated launch with employee education, co-marketing, and support readiness.</p>
+                </div>
+                <div class="card">
+                    <h3>6. Ongoing Support</h3>
+                    <p>Dedicated integration engineer, dashboard, co-marketing, 24/7 partner support.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section class="section" style="text-align: center;">
+            <h2>Ready to Offer Samsung Go to Your Employees?</h2>
+            <p style="margin: 20px 0; font-size: 16px; color: rgba(255, 255, 255, 0.8);">Contact our Partnership team to discuss integration, timeline, and support.</p>
+            
+            <div style="margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                <div><strong style="color: #00C2FF;">Email:</strong> partnership@samsunggobusiness.com</div>
+                <div><strong style="color: #00C2FF;">Phone:</strong> [Integration Partner Line]</div>
+                <div><strong style="color: #00C2FF;">Slack:</strong> #payroll-partners (request invite)</div>
+            </div>
+
+            <button style="margin-top: 30px;" onclick="location.href='mailto:partnership@samsunggobusiness.com?subject=Samsung%20Go%20Business%20Integration%20Inquiry'">Start Integration Conversation</button>
+        </section>
+    </div>
+
+    <footer>
+        <p>Samsung Go Business © 2026 — Payroll Partnership Program</p>
+        <p style="margin-top: 12px;">Direct-deposit election for modern, mobile-first employees. Zero cost. Zero compliance. Zero change.</p>
+    </footer>
+
+    <script>
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>
