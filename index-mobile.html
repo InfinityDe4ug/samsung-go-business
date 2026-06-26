@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="true">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#050B3A">
+    
+    <!-- Samsung-specific meta tags -->
+    <meta name="samsung-tv-content-id" content="samsung-go-business">
+    <meta name="application-name" content="Samsung Go Business">
+    <meta name="msapplication-config" content="none">
+    
+    <title>Samsung Go Business — Mobile</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #050B3A 0%, #0a1555 100%);
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        /* Fullscreen layout for portrait */
+        @media (orientation: portrait) {
+            body {
+                flex-direction: column;
+            }
+            
+            header {
+                flex-shrink: 0;
+            }
+            
+            main {
+                flex: 1;
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px;
+            }
+            
+            #canvas {
+                flex: 1;
+                min-height: 300px;
+            }
+            
+            .controls {
+                max-height: 45vh;
+                width: 100%;
+                border-radius: 8px;
+            }
+        }
+
+        /* Landscape optimized */
+        @media (orientation: landscape) {
+            main {
+                flex-direction: row;
+            }
+            
+            #canvas {
+                flex: 1;
+            }
+            
+            .controls {
+                width: 240px;
+                max-height: 100%;
+            }
+
+            header {
+                padding: 12px 20px;
+            }
+
+            h1 {
+                font-size: 18px;
+            }
+
+            .subtitle {
+                font-size: 11px;
+            }
+        }
+
+        header {
+            padding: 16px 20px;
+            background: rgba(5, 11, 58, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 194, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #00C2FF;
+            letter-spacing: -0.5px;
+        }
+
+        h1 span {
+            color: #1428A0;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 3px;
+            font-weight: 400;
+        }
+
+        .device-badge {
+            font-size: 10px;
+            color: rgba(0, 194, 255, 0.8);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        #canvas {
+            background: linear-gradient(135deg, #050B3A 0%, #0d1f4a 100%);
+            border: 1px solid rgba(0, 194, 255, 0.15);
+            border-radius: 12px;
+            display: block;
+        }
+
+        .controls {
+            background: rgba(5, 11, 58, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 194, 255, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .controls::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .controls::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .controls::-webkit-scrollbar-thumb {
+            background: rgba(0, 194, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #00C2FF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 5px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #1428A0, #00C2FF);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #00C2FF;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0, 194, 255, 0.6);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #00C2FF;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 8px rgba(0, 194, 255, 0.6);
+        }
+
+        .value-display {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-variant-numeric: tabular-nums;
+            font-family: 'Courier New', monospace;
+        }
+
+        input[type="text"] {
+            padding: 8px 10px;
+            background: rgba(0, 194, 255, 0.1);
+            border: 1px solid rgba(0, 194, 255, 0.3);
+            border-radius: 6px;
+            color: #00C2FF;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            background: rgba(0, 194, 255, 0.15);
+            border-color: rgba(0, 194, 255, 0.6);
+        }
+
+        button {
+            padding: 10px 14px;
+            background: linear-gradient(135deg, #1428A0, #1a35c4);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            active: 0.95;
+        }
+
+        button:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        .info {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+            padding: 10px;
+            background: rgba(0, 194, 255, 0.05);
+            border-left: 2px solid rgba(0, 194, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        footer {
+            padding: 10px 16px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            border-top: 1px solid rgba(0, 194, 255, 0.1);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* Safe area support for notch/punch-hole */
+        @supports (padding: max(0px)) {
+            header {
+                padding: max(16px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left));
+            }
+            
+            footer {
+                padding: 10px max(16px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Samsung Go <span>Business</span></h1>
+        <p class="subtitle">Money in Motion</p>
+        <p class="device-badge" id="deviceBadge">● Optimized for Samsung</p>
+    </header>
+
+    <main>
+        <canvas id="canvas"></canvas>
+        <div class="controls">
+            <div class="control-group">
+                <label>Deposit Volume</label>
+                <input type="range" id="depositVolume" min="1" max="100" value="50" step="1">
+                <div class="value-display" id="depositVolumeValue">50</div>
+            </div>
+
+            <div class="control-group">
+                <label>Accounts</label>
+                <input type="range" id="numAccounts" min="1" max="12" value="5" step="1">
+                <div class="value-display" id="numAccountsValue">5</div>
+            </div>
+
+            <div class="control-group">
+                <label>Randomness</label>
+                <input type="range" id="splitRandomness" min="0" max="100" value="30" step="1">
+                <div class="value-display" id="splitRandomnessValue">30%</div>
+            </div>
+
+            <div class="control-group">
+                <label>Fee %</label>
+                <input type="range" id="feePercentage" min="0" max="10" value="2.5" step="0.1">
+                <div class="value-display" id="feePercentageValue">2.5%</div>
+            </div>
+
+            <div class="control-group">
+                <label>Turbulence</label>
+                <input type="range" id="turbulence" min="0" max="100" value="40" step="1">
+                <div class="value-display" id="turbulenceValue">40%</div>
+            </div>
+
+            <div class="control-group">
+                <label>Speed</label>
+                <input type="range" id="animSpeed" min="0.5" max="2" value="1" step="0.1">
+                <div class="value-display" id="animSpeedValue">1.0×</div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(0, 194, 255, 0.2); padding-top: 10px; margin-top: 6px;">
+                <div class="control-group">
+                    <label>Seed</label>
+                    <input type="text" id="seedInput" value="12345" placeholder="seed">
+                    <button onclick="randomizeSeed()">Randomize</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="footer">
+        Samsung Go © 2026
+    </footer>
+
+    <script>
+        // ============================================================================
+        // SAMSUNG GO BUSINESS — MOBILE-OPTIMIZED VISUALIZATION ENGINE
+        // ============================================================================
+
+        // Detect Samsung device
+        function detectSamsungDevice() {
+            const ua = navigator.userAgent;
+            const isSamsung = /samsung|SM-|GT-/i.test(ua);
+            const isAndroid = /Android/i.test(ua);
+            const isGalaxy = /Galaxy|SM-G|SM-A|SM-M/i.test(ua);
+            
+            return {
+                isSamsung,
+                isAndroid,
+                isGalaxy,
+                userAgent: ua,
+                platform: navigator.platform,
+                deviceMemory: navigator.deviceMemory || 'unknown'
+            };
+        }
+
+        const device = detectSamsungDevice();
+        
+        // Display device info
+        if (device.isSamsung || device.isGalaxy) {
+            document.getElementById('deviceBadge').textContent = `● Samsung Galaxy - ${device.userAgent.match(/SM-[A-Z0-9]+/) ? device.userAgent.match(/SM-[A-Z0-9]+/)[0] : 'Device'}`;
+        }
+
+        class SamsungGoBusiness {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d', { alpha: false, antialias: true });
+                this.width = canvas.clientWidth;
+                this.height = canvas.clientHeight;
+                this.dpr = window.devicePixelRatio || 1;
+
+                // Samsung devices often have high DPR; optimize
+                this.canvas.width = this.width * this.dpr;
+                this.canvas.height = this.height * this.dpr;
+                this.ctx.scale(this.dpr, this.dpr);
+
+                this.time = 0;
+                this.params = {
+                    depositVolume: 50,
+                    numAccounts: 5,
+                    splitRandomness: 30,
+                    feePercentage: 2.5,
+                    turbulence: 40,
+                    animSpeed: 1,
+                    seed: 12345
+                };
+
+                this.inflow = { x: -50, y: this.height / 2 };
+                this.nodes = [];
+                this.particles = [];
+                this.updateNodePositions();
+
+                // Handle device orientation and resize
+                window.addEventListener('resize', () => this.handleResize());
+                window.addEventListener('orientationchange', () => this.handleOrientationChange());
+                
+                // Prevent sleep on Samsung devices
+                this.preventSleep();
+                
+                this.animate();
+            }
+
+            // Samsung-specific: Wake lock to prevent screen sleep
+            preventSleep() {
+                if ('wakeLock' in navigator) {
+                    navigator.wakeLock.request('screen').catch(() => {});
+                }
+            }
+
+            mulberry32(seed) {
+                return function() {
+                    let t = seed += 0x6D2B79F5;
+                    t = Math.imul(t ^ t >>> 15, 1 | t);
+                    t ^= t + Math.imul(t ^ t >>> 7, 61 | t);
+                    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+                }
+            }
+
+            perlin(x, y, seed) {
+                const n = Math.sin(x * 12.9898 + y * 78.233 + seed) * 43758.5453;
+                return n - Math.floor(n);
+            }
+
+            curlNoise(x, y, time, turbulence, seed) {
+                const scale = turbulence / 50;
+                const p0 = this.perlin(x * 0.005, y * 0.005, seed + time);
+                const p1 = this.perlin(x * 0.005 + 100, y * 0.005, seed + time);
+                const p2 = this.perlin(x * 0.005, y * 0.005 + 100, seed + time);
+
+                const angle = (p0 + Math.sin(time * 0.5) * p1) * Math.PI * 2;
+                const strength = (p2 * 0.5 + 0.5) * scale;
+
+                return {
+                    vx: Math.cos(angle) * strength,
+                    vy: Math.sin(angle) * strength
+                };
+            }
+
+            phyllotaxis(n, index) {
+                const goldenAngle = 2.39996322972865332;
+                const angle = index * goldenAngle;
+                const radius = 60 + Math.sqrt(index) * 25;
+
+                const cx = this.width / 2;
+                const cy = this.height / 2;
+
+                return {
+                    x: cx + Math.cos(angle) * radius,
+                    y: cy + Math.sin(angle) * radius
+                };
+            }
+
+            updateNodePositions() {
+                this.nodes = [];
+                for (let i = 0; i < this.params.numAccounts; i++) {
+                    const pos = this.phyllotaxis(this.params.numAccounts, i);
+                    this.nodes.push({
+                        x: pos.x,
+                        y: pos.y,
+                        pulse: Math.random() * Math.PI * 2,
+                        weight: 1 / this.params.numAccounts
+                    });
+                }
+
+                const rng = this.mulberry32(this.params.seed);
+                if (this.params.splitRandomness > 0) {
+                    const factor = this.params.splitRandomness / 100;
+                    for (let node of this.nodes) {
+                        node.weight *= (0.5 + rng() * factor);
+                    }
+                }
+
+                const sum = this.nodes.reduce((a, n) => a + n.weight, 0);
+                for (let node of this.nodes) {
+                    node.weight /= sum;
+                }
+            }
+
+            generateDepositParticles() {
+                const rng = this.mulberry32(this.params.seed + Math.floor(this.time));
+                const numParticles = Math.max(2, Math.floor(this.params.depositVolume / 15));
+
+                const feeAmount = this.params.depositVolume * (this.params.feePercentage / 100);
+                const mainAmount = this.params.depositVolume - feeAmount;
+
+                this.particles = [];
+
+                for (let i = 0; i < numParticles; i++) {
+                    const accountIdx = Math.floor(rng() * this.params.numAccounts);
+                    const delay = (i / numParticles) * 0.5;
+                    this.particles.push({
+                        x: this.inflow.x,
+                        y: this.inflow.y + (rng() - 0.5) * 40,
+                        targetNode: accountIdx,
+                        progress: -delay,
+                        isFee: false,
+                        amount: mainAmount / numParticles
+                    });
+                }
+
+                const feeParticles = Math.max(1, Math.floor(numParticles * 0.15));
+                for (let i = 0; i < feeParticles; i++) {
+                    this.particles.push({
+                        x: this.inflow.x,
+                        y: this.inflow.y + (rng() - 0.5) * 20,
+                        targetNode: -1,
+                        progress: -0.2 - (i / feeParticles) * 0.3,
+                        isFee: true,
+                        amount: feeAmount / feeParticles
+                    });
+                }
+            }
+
+            bezierQuadratic(p0, p1, p2, t) {
+                const mt = 1 - t;
+                return mt * mt * p0 + 2 * mt * t * p1 + t * t * p2;
+            }
+
+            rgbToOklch(r, g, b) {
+                r /= 255; g /= 255; b /= 255;
+                const l = 0.4 * r + 0.4 * g + 0.2 * b;
+                const a = 0.2 * r - 0.12 * g - 0.18 * b;
+                const b_ = 0.1 * r + 0.05 * g + 0.15 * b;
+                const c = Math.sqrt(a * a + b_ * b_);
+                const h = Math.atan2(b_, a);
+                return { L: l, C: c, h: h };
+            }
+
+            oklchToRgb(L, C, h) {
+                const a = C * Math.cos(h);
+                const b = C * Math.sin(h);
+                let r = L + 0.3963377774 * a + 0.2158037573 * b;
+                let g = L - 0.1055613458 * a - 0.0638541728 * b;
+                let blue = L - 0.0894841775 * a - 1.2914855480 * b;
+
+                r = r * r * r;
+                g = g * g * g;
+                blue = blue * blue * blue;
+
+                return {
+                    r: Math.max(0, Math.min(255, r * 255)),
+                    g: Math.max(0, Math.min(255, g * 255)),
+                    b: Math.max(0, Math.min(255, blue * 255))
+                };
+            }
+
+            interpolateColor(t, isFee) {
+                if (isFee) {
+                    const c0 = this.rgbToOklch(5, 11, 58);
+                    const c1 = this.rgbToOklch(0, 194, 255);
+                    const L = c0.L + (c1.L - c0.L) * t;
+                    const C = c0.C + (c1.C - c0.C) * t;
+                    const h = c0.h + (c1.h - c0.h) * t;
+                    const rgb = this.oklchToRgb(L, C, h);
+                    return `rgb(${Math.round(rgb.r)}, ${Math.round(rgb.g)}, ${Math.round(rgb.b)})`;
+                } else {
+                    const c0 = this.rgbToOklch(5, 11, 58);
+                    const c1 = this.rgbToOklch(20, 40, 160);
+                    const L = c0.L + (c1.L - c0.L) * t;
+                    const C = c0.C + (c1.C - c0.C) * t;
+                    const h = c0.h + (c1.h - c0.h) * t;
+                    const rgb = this.oklchToRgb(L, C, h);
+                    return `rgb(${Math.round(rgb.r)}, ${Math.round(rgb.g)}, ${Math.round(rgb.b)})`;
+                }
+            }
+
+            dampedOscillation(t, amplitude = 6, decay = 2, frequency = 2) {
+                return amplitude * Math.exp(-decay * t) * Math.cos(frequency * t);
+            }
+
+            updateParticles(dt) {
+                const seed = this.params.seed;
+                const turbulence = this.params.turbulence;
+
+                for (let p of this.particles) {
+                    p.progress += dt * this.params.animSpeed;
+
+                    if (p.progress >= 0 && p.progress <= 1) {
+                        let t = p.progress;
+                        const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+                        const startX = this.inflow.x;
+                        const startY = this.inflow.y;
+
+                        let endX, endY;
+                        if (p.isFee) {
+                            endX = this.width + 50;
+                            endY = 40;
+                        } else {
+                            endX = this.nodes[p.targetNode].x;
+                            endY = this.nodes[p.targetNode].y;
+                        }
+
+                        const cpX = (startX + endX) / 2 + (Math.random() - 0.5) * 120;
+                        const cpY = (startY + endY) / 2 - Math.abs(endY - startY) * 0.3;
+
+                        p.x = this.bezierQuadratic(startX, cpX, endX, eased);
+                        p.y = this.bezierQuadratic(startY, cpY, endY, eased);
+
+                        const curl = this.curlNoise(p.x, p.y, this.time, turbulence, seed);
+                        p.x += curl.vx * 4;
+                        p.y += curl.vy * 4;
+                    }
+                }
+            }
+
+            drawParticles() {
+                for (let p of this.particles) {
+                    if (p.progress >= 0 && p.progress <= 1.5) {
+                        const t = Math.min(1, p.progress);
+                        const opacity = p.progress > 1 ? (1.5 - p.progress) * 2 : 1;
+
+                        this.ctx.fillStyle = this.interpolateColor(t, p.isFee);
+                        this.ctx.globalAlpha = opacity;
+                        this.ctx.beginPath();
+                        this.ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                }
+                this.ctx.globalAlpha = 1;
+            }
+
+            drawNodes() {
+                for (let i = 0; i < this.nodes.length; i++) {
+                    const node = this.nodes[i];
+                    const pulse = this.dampedOscillation(this.time - i * 0.1, 4, 1.5, 3);
+                    const radius = 12 + pulse;
+
+                    this.ctx.strokeStyle = '#1428A0';
+                    this.ctx.lineWidth = 1.5;
+                    this.ctx.beginPath();
+                    this.ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+                    this.ctx.stroke();
+
+                    const gradient = this.ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, radius + 6);
+                    gradient.addColorStop(0, 'rgba(0, 194, 255, 0.3)');
+                    gradient.addColorStop(1, 'rgba(0, 194, 255, 0)');
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.beginPath();
+                    this.ctx.arc(node.x, node.y, radius + 6, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            }
+
+            drawInflow() {
+                this.ctx.strokeStyle = '#1428A0';
+                this.ctx.lineWidth = 1.5;
+                this.ctx.beginPath();
+                this.ctx.arc(this.inflow.x, this.inflow.y, 9, 0, Math.PI * 2);
+                this.ctx.stroke();
+
+                const gradient = this.ctx.createRadialGradient(this.inflow.x, this.inflow.y, 0, this.inflow.x, this.inflow.y, 16);
+                gradient.addColorStop(0, 'rgba(20, 40, 160, 0.5)');
+                gradient.addColorStop(1, 'rgba(20, 40, 160, 0)');
+                this.ctx.fillStyle = gradient;
+                this.ctx.beginPath();
+                this.ctx.arc(this.inflow.x, this.inflow.y, 16, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+
+            drawFeeNode() {
+                const x = this.width + 50;
+                const y = 40;
+
+                this.ctx.strokeStyle = '#00C2FF';
+                this.ctx.lineWidth = 1.5;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, 10, 0, Math.PI * 2);
+                this.ctx.stroke();
+
+                const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, 18);
+                gradient.addColorStop(0, 'rgba(0, 194, 255, 0.4)');
+                gradient.addColorStop(1, 'rgba(0, 194, 255, 0)');
+                this.ctx.fillStyle = gradient;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, 18, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+
+            animate() {
+                this.ctx.fillStyle = 'rgba(5, 11, 58, 0.08)';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+
+                const bgGradient = this.ctx.createLinearGradient(0, 0, this.width, this.height);
+                bgGradient.addColorStop(0, 'rgba(5, 11, 58, 0.03)');
+                bgGradient.addColorStop(1, 'rgba(20, 40, 160, 0.03)');
+                this.ctx.fillStyle = bgGradient;
+                this.ctx.fillRect(0, 0, this.width, this.height);
+
+                this.drawFeeNode();
+                this.drawInflow();
+                this.drawNodes();
+                this.updateParticles(0.016);
+                this.drawParticles();
+
+                this.time += 0.016 * this.params.animSpeed;
+
+                requestAnimationFrame(() => this.animate());
+            }
+
+            handleResize() {
+                this.width = this.canvas.clientWidth;
+                this.height = this.canvas.clientHeight;
+                this.canvas.width = this.width * this.dpr;
+                this.canvas.height = this.height * this.dpr;
+                this.ctx.scale(this.dpr, this.dpr);
+                this.inflow.y = this.height / 2;
+            }
+
+            handleOrientationChange() {
+                setTimeout(() => this.handleResize(), 100);
+            }
+
+            updateParams(params) {
+                this.params = { ...this.params, ...params };
+                this.updateNodePositions();
+                this.particles = [];
+            }
+
+            triggerNewDeposit() {
+                this.generateDepositParticles();
+            }
+        }
+
+        // ====== UI INITIALIZATION ======
+        const canvas = document.getElementById('canvas');
+        const engine = new SamsungGoBusiness(canvas);
+
+        const controls = {
+            depositVolume: document.getElementById('depositVolume'),
+            numAccounts: document.getElementById('numAccounts'),
+            splitRandomness: document.getElementById('splitRandomness'),
+            feePercentage: document.getElementById('feePercentage'),
+            turbulence: document.getElementById('turbulence'),
+            animSpeed: document.getElementById('animSpeed'),
+            seedInput: document.getElementById('seedInput')
+        };
+
+        Object.entries(controls).forEach(([key, element]) => {
+            if (key === 'seedInput') return;
+            element.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                engine.updateParams({ [key]: value });
+
+                if (key === 'depositVolume') {
+                    document.getElementById('depositVolumeValue').textContent = value;
+                    engine.triggerNewDeposit();
+                } else if (key === 'numAccounts') {
+                    document.getElementById('numAccountsValue').textContent = value;
+                } else if (key === 'splitRandomness') {
+                    document.getElementById('splitRandomnessValue').textContent = value + '%';
+                    engine.updateNodePositions();
+                } else if (key === 'feePercentage') {
+                    document.getElementById('feePercentageValue').textContent = value.toFixed(1) + '%';
+                    engine.triggerNewDeposit();
+                } else if (key === 'turbulence') {
+                    document.getElementById('turbulenceValue').textContent = value + '%';
+                } else if (key === 'animSpeed') {
+                    document.getElementById('animSpeedValue').textContent = value.toFixed(1) + '×';
+                }
+            });
+        });
+
+        function randomizeSeed() {
+            const newSeed = Math.floor(Math.random() * 2147483647);
+            document.getElementById('seedInput').value = newSeed;
+            engine.updateParams({ seed: newSeed });
+            engine.updateNodePositions();
+            engine.triggerNewDeposit();
+        }
+
+        engine.triggerNewDeposit();
+        setInterval(() => engine.triggerNewDeposit(), 3000);
+
+        // Samsung-specific: Haptic feedback on interactions (if supported)
+        if ('vibrate' in navigator) {
+            document.addEventListener('touchstart', () => {
+                navigator.vibrate(5);
+            });
+        }
+    </script>
+</body>
+</html>
