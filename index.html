@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsung Go Business — Generative Visual System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Inter', 'Manrope', sans-serif;
+            background: linear-gradient(135deg, #050B3A 0%, #0a1555 100%);
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 20px 30px;
+            background: rgba(5, 11, 58, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 194, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #00C2FF;
+            letter-spacing: -0.5px;
+        }
+
+        h1 span {
+            color: #1428A0;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        #canvas {
+            flex: 1;
+            background: linear-gradient(135deg, #050B3A 0%, #0d1f4a 100%);
+            border: 1px solid rgba(0, 194, 255, 0.15);
+            border-radius: 12px;
+            cursor: crosshair;
+        }
+
+        .controls {
+            width: 280px;
+            background: rgba(5, 11, 58, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 194, 255, 0.15);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .controls::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .controls::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .controls::-webkit-scrollbar-thumb {
+            background: rgba(0, 194, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #00C2FF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #1428A0, #00C2FF);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #00C2FF;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0, 194, 255, 0.6);
+            transition: all 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            width: 18px;
+            height: 18px;
+            box-shadow: 0 0 16px rgba(0, 194, 255, 0.8);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #00C2FF;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 8px rgba(0, 194, 255, 0.6);
+            transition: all 0.2s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            width: 18px;
+            height: 18px;
+            box-shadow: 0 0 16px rgba(0, 194, 255, 0.8);
+        }
+
+        .value-display {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            font-variant-numeric: tabular-nums;
+            font-family: 'Courier New', monospace;
+        }
+
+        input[type="text"] {
+            padding: 8px 12px;
+            background: rgba(0, 194, 255, 0.1);
+            border: 1px solid rgba(0, 194, 255, 0.3);
+            border-radius: 6px;
+            color: #00C2FF;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            background: rgba(0, 194, 255, 0.15);
+            border-color: rgba(0, 194, 255, 0.6);
+            box-shadow: 0 0 8px rgba(0, 194, 255, 0.2);
+        }
+
+        button {
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #1428A0, #1a35c4);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #1a35c4, #1f3dd6);
+            box-shadow: 0 4px 16px rgba(20, 40, 160, 0.4);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .info {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.5;
+            padding: 12px;
+            background: rgba(0, 194, 255, 0.05);
+            border-left: 2px solid rgba(0, 194, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        footer {
+            padding: 12px 30px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            border-top: 1px solid rgba(0, 194, 255, 0.1);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Samsung Go <span>Business</span></h1>
+        <p class="subtitle">Generative Visual System — Money in Motion</p>
+    </header>
+
+    <main>
+        <canvas id="canvas"></canvas>
+        <div class="controls">
+            <div class="control-group">
+                <label>Deposit Volume</label>
+                <input type="range" id="depositVolume" min="1" max="100" value="50" step="1">
+                <div class="value-display" id="depositVolumeValue">50</div>
+            </div>
+
+            <div class="control-group">
+                <label>Destination Accounts</label>
+                <input type="range" id="numAccounts" min="1" max="12" value="5" step="1">
+                <div class="value-display" id="numAccountsValue">5 accounts</div>
+            </div>
+
+            <div class="control-group">
+                <label>Split Randomness</label>
+                <input type="range" id="splitRandomness" min="0" max="100" value="30" step="1">
+                <div class="value-display" id="splitRandomnessValue">30%</div>
+            </div>
+
+            <div class="control-group">
+                <label>Fee Percentage</label>
+                <input type="range" id="feePercentage" min="0" max="10" value="2.5" step="0.1">
+                <div class="value-display" id="feePercentageValue">2.5%</div>
+            </div>
+
+            <div class="control-group">
+                <label>Flow Turbulence</label>
+                <input type="range" id="turbulence" min="0" max="100" value="40" step="1">
+                <div class="value-display" id="turbulenceValue">40%</div>
+            </div>
+
+            <div class="control-group">
+                <label>Animation Speed</label>
+                <input type="range" id="animSpeed" min="0.5" max="2" value="1" step="0.1">
+                <div class="value-display" id="animSpeedValue">1.0×</div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(0, 194, 255, 0.2); padding-top: 12px; margin-top: 8px;">
+                <div class="control-group">
+                    <label>Random Seed</label>
+                    <input type="text" id="seedInput" value="12345" placeholder="Enter seed">
+                    <button onclick="randomizeSeed()">Randomize</button>
+                </div>
+            </div>
+
+            <div class="info">
+                <strong>Tip:</strong> Adjust parameters in real-time. The seed ensures deterministic reproducibility — same seed = identical render.
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        Samsung Go Business © 2026 — A parametric visualization of fintech workflows rendered in One UI design language
+    </footer>
+
+    <script>
+        // ============================================================================
+        // SAMSUNG GO BUSINESS — PARAMETRIC VISUALIZATION ENGINE
+        // ============================================================================
+
+        class SamsungGoBusiness {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.width = canvas.clientWidth;
+                this.height = canvas.clientHeight;
+                this.dpr = window.devicePixelRatio || 1;
+
+                this.canvas.width = this.width * this.dpr;
+                this.canvas.height = this.height * this.dpr;
+                this.ctx.scale(this.dpr, this.dpr);
+
+                this.time = 0;
+                this.params = {
+                    depositVolume: 50,
+                    numAccounts: 5,
+                    splitRandomness: 30,
+                    feePercentage: 2.5,
+                    turbulence: 40,
+                    animSpeed: 1,
+                    seed: 12345
+                };
+
+                this.inflow = { x: -50, y: this.height / 2 };
+                this.nodes = [];
+                this.particles = [];
+                this.updateNodePositions();
+
+                window.addEventListener('resize', () => this.handleResize());
+                this.animate();
+            }
+
+            // ====== PRNG (Seedable) ======
+            seededRandom(seed) {
+                return (seed * 9301 + 49297) % 233280 / 233280;
+            }
+
+            mulberry32(seed) {
+                return function() {
+                    let t = seed += 0x6D2B79F5;
+                    t = Math.imul(t ^ t >>> 15, 1 | t);
+                    t ^= t + Math.imul(t ^ t >>> 7, 61 | t);
+                    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+                }
+            }
+
+            // ====== PERLIN-LIKE NOISE (Simplex-inspired) ======
+            perlin(x, y, seed) {
+                const n = Math.sin(x * 12.9898 + y * 78.233 + seed) * 43758.5453;
+                return n - Math.floor(n);
+            }
+
+            smoothstep(t) {
+                return t * t * (3 - 2 * t);
+            }
+
+            // ====== CURL NOISE (Divergence-free field) ======
+            curlNoise(x, y, time, turbulence, seed) {
+                const scale = turbulence / 50;
+                const p0 = this.perlin(x * 0.005, y * 0.005, seed + time);
+                const p1 = this.perlin(x * 0.005 + 100, y * 0.005, seed + time);
+                const p2 = this.perlin(x * 0.005, y * 0.005 + 100, seed + time);
+
+                // Approximate curl: v = ∇ × ψ
+                const angle = (p0 + Math.sin(time * 0.5) * p1) * Math.PI * 2;
+                const strength = (p2 * 0.5 + 0.5) * scale;
+
+                return {
+                    vx: Math.cos(angle) * strength,
+                    vy: Math.sin(angle) * strength
+                };
+            }
+
+            // ====== PHYLLOTAXIS (Golden-angle distribution) ======
+            phyllotaxis(n, index) {
+                const goldenAngle = 2.39996322972865332; // radians, ≈ 137.5°
+                const angle = index * goldenAngle;
+                const radius = 80 + Math.sqrt(index) * 35;
+
+                const cx = this.width / 2;
+                const cy = this.height / 2;
+
+                return {
+                    x: cx + Math.cos(angle) * radius,
+                    y: cy + Math.sin(angle) * radius
+                };
+            }
+
+            updateNodePositions() {
+                this.nodes = [];
+                for (let i = 0; i < this.params.numAccounts; i++) {
+                    const pos = this.phyllotaxis(this.params.numAccounts, i);
+                    this.nodes.push({
+                        x: pos.x,
+                        y: pos.y,
+                        pulse: Math.random() * Math.PI * 2,
+                        weight: 1 / this.params.numAccounts
+                    });
+                }
+
+                // Adjust weights for randomness
+                const rng = this.mulberry32(this.params.seed);
+                if (this.params.splitRandomness > 0) {
+                    const factor = this.params.splitRandomness / 100;
+                    for (let node of this.nodes) {
+                        node.weight *= (0.5 + rng() * factor);
+                    }
+                }
+
+                // Normalize
+                const sum = this.nodes.reduce((a, n) => a + n.weight, 0);
+                for (let node of this.nodes) {
+                    node.weight /= sum;
+                }
+            }
+
+            generateDepositParticles() {
+                const rng = this.mulberry32(this.params.seed + Math.floor(this.time));
+                const numParticles = Math.max(3, Math.floor(this.params.depositVolume / 10));
+
+                // Fee skim (fixed, goes to separate cyan channel)
+                const feeAmount = this.params.depositVolume * (this.params.feePercentage / 100);
+                const mainAmount = this.params.depositVolume - feeAmount;
+
+                this.particles = [];
+
+                // Main deposit particles → accounts
+                for (let i = 0; i < numParticles; i++) {
+                    const accountIdx = Math.floor(rng() * this.params.numAccounts);
+                    const delay = (i / numParticles) * 0.5;
+                    this.particles.push({
+                        x: this.inflow.x,
+                        y: this.inflow.y + (rng() - 0.5) * 40,
+                        targetNode: accountIdx,
+                        progress: -delay,
+                        isFee: false,
+                        amount: mainAmount / numParticles
+                    });
+                }
+
+                // Fee particles → dedicated fee settling node
+                const feeParticles = Math.max(1, Math.floor(numParticles * 0.15));
+                for (let i = 0; i < feeParticles; i++) {
+                    this.particles.push({
+                        x: this.inflow.x,
+                        y: this.inflow.y + (rng() - 0.5) * 20,
+                        targetNode: -1, // Special marker for fee
+                        progress: -0.2 - (i / feeParticles) * 0.3,
+                        isFee: true,
+                        amount: feeAmount / feeParticles
+                    });
+                }
+            }
+
+            // ====== BÉZIER INTERPOLATION ======
+            bezierQuadratic(p0, p1, p2, t) {
+                const mt = 1 - t;
+                return mt * mt * p0 + 2 * mt * t * p1 + t * t * p2;
+            }
+
+            // ====== OKLCH COLOR INTERPOLATION ======
+            rgbToOklch(r, g, b) {
+                r /= 255; g /= 255; b /= 255;
+                const l = 0.4 * r + 0.4 * g + 0.2 * b;
+                const a = 0.2 * r - 0.12 * g - 0.18 * b;
+                const b_ = 0.1 * r + 0.05 * g + 0.15 * b;
+                const c = Math.sqrt(a * a + b_ * b_);
+                const h = Math.atan2(b_, a);
+                return { L: l, C: c, h: h };
+            }
+
+            oklchToRgb(L, C, h) {
+                const a = C * Math.cos(h);
+                const b = C * Math.sin(h);
+                let r = L + 0.3963377774 * a + 0.2158037573 * b;
+                let g = L - 0.1055613458 * a - 0.0638541728 * b;
+                let blue = L - 0.0894841775 * a - 1.2914855480 * b;
+
+                r = r * r * r;
+                g = g * g * g;
+                blue = blue * blue * blue;
+
+                return {
+                    r: Math.max(0, Math.min(255, r * 255)),
+                    g: Math.max(0, Math.min(255, g * 255)),
+                    b: Math.max(0, Math.min(255, blue * 255))
+                };
+            }
+
+            interpolateColor(t, isFee) {
+                if (isFee) {
+                    // Navy → Cyan (fee channel)
+                    const c0 = this.rgbToOklch(5, 11, 58);
+                    const c1 = this.rgbToOklch(0, 194, 255);
+                    const L = c0.L + (c1.L - c0.L) * t;
+                    const C = c0.C + (c1.C - c0.C) * t;
+                    const h = c0.h + (c1.h - c0.h) * t;
+                    const rgb = this.oklchToRgb(L, C, h);
+                    return `rgb(${Math.round(rgb.r)}, ${Math.round(rgb.g)}, ${Math.round(rgb.b)})`;
+                } else {
+                    // Navy → Samsung Blue (main channel)
+                    const c0 = this.rgbToOklch(5, 11, 58);
+                    const c1 = this.rgbToOklch(20, 40, 160);
+                    const L = c0.L + (c1.L - c0.L) * t;
+                    const C = c0.C + (c1.C - c0.C) * t;
+                    const h = c0.h + (c1.h - c0.h) * t;
+                    const rgb = this.oklchToRgb(L, C, h);
+                    return `rgb(${Math.round(rgb.r)}, ${Math.round(rgb.g)}, ${Math.round(rgb.b)})`;
+                }
+            }
+
+            // ====== DAMPED HARMONIC MOTION ======
+            dampedOscillation(t, amplitude = 8, decay = 2, frequency = 2) {
+                return amplitude * Math.exp(-decay * t) * Math.cos(frequency * t);
+            }
+
+            updateParticles(dt) {
+                const seed = this.params.seed;
+                const turbulence = this.params.turbulence;
+
+                for (let p of this.particles) {
+                    p.progress += dt * this.params.animSpeed;
+
+                    if (p.progress >= 0 && p.progress <= 1) {
+                        // Easing: cubic ease-in-out
+                        let t = p.progress;
+                        const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+                        // Start → end node
+                        const startX = this.inflow.x;
+                        const startY = this.inflow.y;
+
+                        let endX, endY;
+                        if (p.isFee) {
+                            // Fee settles in a separate location (right side, cyan accent)
+                            endX = this.width + 60;
+                            endY = 60;
+                        } else {
+                            endX = this.nodes[p.targetNode].x;
+                            endY = this.nodes[p.targetNode].y;
+                        }
+
+                        // Control point for Bézier (creates organic curve)
+                        const cpX = (startX + endX) / 2 + (Math.random() - 0.5) * 150;
+                        const cpY = (startY + endY) / 2 - Math.abs(endY - startY) * 0.3;
+
+                        // Interpolate along spline
+                        p.x = this.bezierQuadratic(startX, cpX, endX, eased);
+                        p.y = this.bezierQuadratic(startY, cpY, endY, eased);
+
+                        // Apply curl noise for organic drift
+                        const curl = this.curlNoise(p.x, p.y, this.time, turbulence, seed);
+                        p.x += curl.vx * 5;
+                        p.y += curl.vy * 5;
+                    }
+                }
+            }
+
+            drawParticles() {
+                for (let p of this.particles) {
+                    if (p.progress >= 0 && p.progress <= 1.5) {
+                        const t = Math.min(1, p.progress);
+                        const opacity = p.progress > 1 ? (1.5 - p.progress) * 2 : 1;
+
+                        this.ctx.fillStyle = this.interpolateColor(t, p.isFee);
+                        this.ctx.globalAlpha = opacity;
+                        this.ctx.beginPath();
+                        this.ctx.arc(p.x, p.y, 4 + Math.random() * 2, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                }
+                this.ctx.globalAlpha = 1;
+            }
+
+            drawNodes() {
+                for (let i = 0; i < this.nodes.length; i++) {
+                    const node = this.nodes[i];
+
+                    // Damped oscillation pulse
+                    const pulse = this.dampedOscillation(this.time - i * 0.1, 6, 1.5, 3);
+                    const radius = 16 + pulse;
+
+                    // Node circle (Samsung blue)
+                    this.ctx.strokeStyle = '#1428A0';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.beginPath();
+                    this.ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+                    this.ctx.stroke();
+
+                    // Inner glow
+                    const gradient = this.ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, radius + 8);
+                    gradient.addColorStop(0, 'rgba(0, 194, 255, 0.4)');
+                    gradient.addColorStop(1, 'rgba(0, 194, 255, 0)');
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.beginPath();
+                    this.ctx.arc(node.x, node.y, radius + 8, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    // Label
+                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                    this.ctx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.fillText(`Acc. ${i + 1}`, node.x, node.y - radius - 16);
+                    this.ctx.fillText(`${(node.weight * 100).toFixed(0)}%`, node.x, node.y);
+                }
+            }
+
+            drawInflow() {
+                // Inflow source
+                this.ctx.strokeStyle = '#1428A0';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.arc(this.inflow.x, this.inflow.y, 12, 0, Math.PI * 2);
+                this.ctx.stroke();
+
+                // Glow
+                const gradient = this.ctx.createRadialGradient(this.inflow.x, this.inflow.y, 0, this.inflow.x, this.inflow.y, 20);
+                gradient.addColorStop(0, 'rgba(20, 40, 160, 0.6)');
+                gradient.addColorStop(1, 'rgba(20, 40, 160, 0)');
+                this.ctx.fillStyle = gradient;
+                this.ctx.beginPath();
+                this.ctx.arc(this.inflow.x, this.inflow.y, 20, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                this.ctx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('Deposit', this.inflow.x, this.inflow.y - 24);
+            }
+
+            drawFeeNode() {
+                // Fee settling zone (right side, cyan)
+                const x = this.width + 60;
+                const y = 60;
+
+                this.ctx.strokeStyle = '#00C2FF';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, 14, 0, Math.PI * 2);
+                this.ctx.stroke();
+
+                const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, 22);
+                gradient.addColorStop(0, 'rgba(0, 194, 255, 0.5)');
+                gradient.addColorStop(1, 'rgba(0, 194, 255, 0)');
+                this.ctx.fillStyle = gradient;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, 22, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.fillStyle = 'rgba(0, 194, 255, 0.8)';
+                this.ctx.font = '10px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('Fee', x, y - 26);
+            }
+
+            animate() {
+                this.ctx.fillStyle = 'rgba(5, 11, 58, 0.1)';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+
+                // Subtle gradient background
+                const bgGradient = this.ctx.createLinearGradient(0, 0, this.width, this.height);
+                bgGradient.addColorStop(0, 'rgba(5, 11, 58, 0.05)');
+                bgGradient.addColorStop(1, 'rgba(20, 40, 160, 0.05)');
+                this.ctx.fillStyle = bgGradient;
+                this.ctx.fillRect(0, 0, this.width, this.height);
+
+                this.drawFeeNode();
+                this.drawInflow();
+                this.drawNodes();
+                this.updateParticles(0.016); // ~60fps
+                this.drawParticles();
+
+                this.time += 0.016 * this.params.animSpeed;
+
+                requestAnimationFrame(() => this.animate());
+            }
+
+            handleResize() {
+                this.width = this.canvas.clientWidth;
+                this.height = this.canvas.clientHeight;
+                this.canvas.width = this.width * this.dpr;
+                this.canvas.height = this.height * this.dpr;
+                this.ctx.scale(this.dpr, this.dpr);
+                this.inflow.y = this.height / 2;
+            }
+
+            updateParams(params) {
+                this.params = { ...this.params, ...params };
+                this.updateNodePositions();
+                this.particles = [];
+            }
+
+            triggerNewDeposit() {
+                this.generateDepositParticles();
+            }
+        }
+
+        // ====== UI INITIALIZATION ======
+        const canvas = document.getElementById('canvas');
+        const engine = new SamsungGoBusiness(canvas);
+
+        const controls = {
+            depositVolume: document.getElementById('depositVolume'),
+            numAccounts: document.getElementById('numAccounts'),
+            splitRandomness: document.getElementById('splitRandomness'),
+            feePercentage: document.getElementById('feePercentage'),
+            turbulence: document.getElementById('turbulence'),
+            animSpeed: document.getElementById('animSpeed'),
+            seedInput: document.getElementById('seedInput')
+        };
+
+        Object.entries(controls).forEach(([key, element]) => {
+            if (key === 'seedInput') return;
+            element.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                engine.updateParams({ [key]: value });
+
+                if (key === 'depositVolume') {
+                    document.getElementById('depositVolumeValue').textContent = value;
+                    engine.triggerNewDeposit();
+                } else if (key === 'numAccounts') {
+                    document.getElementById('numAccountsValue').textContent = value + ' accounts';
+                } else if (key === 'splitRandomness') {
+                    document.getElementById('splitRandomnessValue').textContent = value + '%';
+                    engine.updateNodePositions();
+                } else if (key === 'feePercentage') {
+                    document.getElementById('feePercentageValue').textContent = value.toFixed(1) + '%';
+                    engine.triggerNewDeposit();
+                } else if (key === 'turbulence') {
+                    document.getElementById('turbulenceValue').textContent = value + '%';
+                } else if (key === 'animSpeed') {
+                    document.getElementById('animSpeedValue').textContent = value.toFixed(1) + '×';
+                }
+            });
+        });
+
+        function randomizeSeed() {
+            const newSeed = Math.floor(Math.random() * 2147483647);
+            document.getElementById('seedInput').value = newSeed;
+            engine.updateParams({ seed: newSeed });
+            engine.updateNodePositions();
+            engine.triggerNewDeposit();
+        }
+
+        // Initial deposit
+        engine.triggerNewDeposit();
+        setInterval(() => engine.triggerNewDeposit(), 3000);
+    </script>
+</body>
+</html>
