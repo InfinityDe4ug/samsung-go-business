@@ -73,6 +73,71 @@ Employee Samsung Galaxy Device
 
 ---
 
+## Data Products & Monetization
+
+Samsung Go Business monetizes **aggregated, anonymized insights and analytics products**. We do **not** sell personal transaction records, income data, employment data, account-level identities, or employer payroll files.
+
+### 1) Payroll Participation Benchmark Report
+**Product:** Subscription report showing aggregated adoption metrics by industry, geography, and employer size.
+
+**What customers get:**
+- Opt-in rate by industry
+- Average direct-deposit conversion rate
+- Employee activation trends
+- Split-deposit usage by segment
+- Deposit timing patterns
+
+**Customers:** Payroll providers, HR tech platforms, enterprise HR teams.
+
+**Pricing model:** Annual subscription with tiered access by seat, geography coverage, and refresh frequency.
+
+**Positioning:**
+> “See how your workforce banking adoption compares to anonymized peers in your industry and region.”
+
+### 2) Treasury Flow Intelligence Dashboard
+**Product:** A dashboard showing anonymized movement trends across deposits, transfers, and settlement activity.
+
+**What customers get:**
+- Deposit volume trends
+- Average settlement speed
+- Peak payroll days
+- Check deposit frequency
+- Liquidity planning signals at the segment level
+
+**Customers:** Banks, sponsor banks, treasury teams, payroll operators.
+
+**Pricing model:** Monthly SaaS subscription with premium reporting exports and API access.
+
+**Positioning:**
+> “Use anonymized flow intelligence to improve forecasting, settlement planning, and partner support.”
+
+### 3) Workforce Banking Engagement API
+**Product:** A paid API that returns de-identified engagement metrics for enterprise partners.
+
+**What customers get:**
+- Enrollment conversion rate
+- Active account rate
+- Split-deposit adoption rate
+- Mobile check deposit usage
+- Retention cohort summaries
+
+**Customers:** Large payroll partners, HR analytics platforms, financial wellness platforms.
+
+**Pricing model:** Usage-based API pricing with monthly minimums and enterprise SLA tiers.
+
+**Positioning:**
+> “Embed anonymized banking engagement metrics directly into your HR or payroll analytics stack.”
+
+### Monetization Principles
+
+- **Aggregated only**: No individual-level resale
+- **Thresholded**: No insight shown below minimum cohort size
+- **Anonymized**: Geography and industry only; no identifying employer detail
+- **Consent-aware**: Product and partner terms explicitly disclose analytics use
+- **Compliance-first**: Sponsor bank and Samsung retain full oversight of regulated data handling
+
+---
+
 ## Business Model
 
 ### What Payroll Providers Offer (No Cost to You)
@@ -88,14 +153,15 @@ Employee Samsung Galaxy Device
 - **Customer Support:** 24/7 for employees; integration support for payroll partners
 - **Product:** Mobile app, check deposit, transfers, notifications—all on-device
 
-### Revenue Model (Transparent)
+### Revenue Model
 
 Samsung Go generates revenue through:
-- Modest interchange on certain transactions (standard fintech model)
-- Optional premium features for power users (future)
-- Not through employer or payroll provider data sales
+- Subscription analytics products
+- Premium dashboard access
+- Paid API access and enterprise SLAs
+- Modest interchange on certain transactions where applicable
 
-**Payroll providers:** No revenue share demanded, no back-end fees. We compete on value to the employee; you get differentiation at zero cost.
+**Payroll providers:** No revenue share demanded, no backend fees for integration. Partners may optionally subscribe to analytics products separately.
 
 ---
 
